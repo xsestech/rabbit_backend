@@ -13,3 +13,6 @@ services:
     environment:
       # Enables autoreload.
       RABBIT_BACKEND_RELOAD: "True"
+  db:
+    ports:
+      - "5431:5432"

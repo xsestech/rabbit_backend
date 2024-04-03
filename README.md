@@ -106,6 +106,11 @@ By default it runs:
 
 You can read more about pre-commit here: https://pre-commit.com/
 
+## Remove DB
+```bash
+docker-compose -f deploy/docker-compose.yml -f deploy/docker-compose.dev.yml --project-directory . rm -v
+```
+
 ## Migrations
 
 If you want to migrate your database, you should run following commands:
