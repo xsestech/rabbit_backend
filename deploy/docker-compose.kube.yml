@@ -1,0 +1,23 @@
+version: '3.9'
+
+services:
+  api:
+    labels:
+      kompose.service.expose: $URL
+      nginx.ingress.kubernetes.io/rewrite-target: /$1
+      ingress.kubernetes.io/ssl-redirect: 'false'
+      nginx.ingress.kubernetes.io/backend-protocol: HTTP
+    ports:
+    - "80:8000"
+  db:
+    labels:
+      kompose.service.type: 'nodeport'
+      kompose.service.nodeport.port: '5432'
+    ports:
+    - "5432:5432"
+  redis:
+    labels:
+      kompose.service.type: 'nodeport'
+      kompose.service.nodeport.port: '6379'
+    ports:
+    - "6379:6379"
