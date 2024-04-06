@@ -1,3 +1,5 @@
 ci_access:
+  projects:
+    - id: ai-gang/rabbit_backend
   groups:
     - id: ai-gang
