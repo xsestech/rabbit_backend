@@ -81,6 +81,7 @@ deploy:
   tags:
     - docker-runner
   image: alpine/k8s:1.29.1
+  environment: production
   variables:
     NAMESPACE: $CI_COMMIT_REF_SLUG
     IMAGE: $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
