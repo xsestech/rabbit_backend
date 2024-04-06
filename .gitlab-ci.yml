@@ -83,7 +83,7 @@ deploy:
   image: alpine/k8s:1.29.1
   # environment: production
   environment:
-    name: review/$CI_COMMIT_REF_NAME
+    name: prod-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG
     url: https://$CI_ENVIRONMENT_SLUG-cluster.aigang.ru
   variables:
     NAMESPACE: $CI_ENVIRONMENT_SLUG
@@ -92,6 +92,7 @@ deploy:
     KUBE_CONTEXT: ai-gang/rabbit_backend:cluster
   before_script:
     # init namespace
+    - echo USERS_SECRET=$USERS_SECRET >> deploy/.env
     - kubectl config use-context $KUBE_CONTEXT
     - kubectl create namespace $NAMESPACE || true
     # download tools
@@ -103,8 +104,6 @@ deploy:
   script:
 
     # first delete CrashLoopBackOff pods, polluting logs
-    - ls -a
-    -  cp .env deploy/.env
     - kubectl -n $NAMESPACE delete pod `kubectl -n $NAMESPACE get pods --selector app.kubernetes.io/component=$MODULE | awk '$3 == "CrashLoopBackOff" {print $1}'` || true
     # now deploying
     - kompose convert -f deploy/docker-compose.yml -f deploy/docker-compose.kube.yml --out k8s/
