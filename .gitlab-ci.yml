@@ -103,6 +103,7 @@ deploy:
   script:
 
     # first delete CrashLoopBackOff pods, polluting logs
+    - ls -a
     -  cp .env deploy/.env
     - kubectl -n $NAMESPACE delete pod `kubectl -n $NAMESPACE get pods --selector app.kubernetes.io/component=$MODULE | awk '$3 == "CrashLoopBackOff" {print $1}'` || true
     # now deploying
