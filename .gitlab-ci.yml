@@ -81,27 +81,29 @@ deploy:
   tags:
     - docker-runner
   image: alpine/k8s:1.29.1
-  environment: production
+  # environment: production
+  environment:
+    name: review/$CI_COMMIT_REF_NAME
+    url: https://$CI_ENVIRONMENT_SLUG-cluster.aigang.ru
   variables:
     NAMESPACE: $CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG
     IMAGE: $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
-    URL: $CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-cluster.aigang.ru
-  # before_script:
-  #   # init namespace
-  #   - kubectl config use-context $KUBE_CONTEXT
-  #   # - kubectl create namespace $NAMESPACE || true
-  #   # download tools
-  #   - curl --show-error --silent --location https://github.com/stern/stern/releases/download/v1.22.0/stern_1.22.0_linux_amd64.tar.gz | tar zx --directory /usr/bin/ stern && chmod 755 /usr/bin/stern && stern --version
-  #   - curl --show-error --silent --location https://github.com/kubernetes/kompose/releases/download/v1.32.0/kompose-linux-amd64 -o /usr/local/bin/kompose && chmod a+x /usr/local/bin/kompose && kompose version
-  #   # show logs asynchronously. Timeout to avoid hanging indefinitely when an error occurs in script section
-  #   - timeout 1200 stern -n $NAMESPACE "app-" --tail=0 --color=always & # in background, tail new logs if any (current and incoming) pod with this regex as name
-  #   - timeout 1200 kubectl -n $NAMESPACE get events --watch-only & # in background, tail new events in background
+    URL: $CI_ENVIRONMENT_SLUG-cluster.aigang.ru
+    KUBE_CONTEXT: ai-gang/rabbit_backend:cluster
+  before_script:
+    # init namespace
+    - kubectl config use-context $KUBE_CONTEXT
+    - kubectl create namespace $NAMESPACE || true
+    # download tools
+    - curl --show-error --silent --location https://github.com/stern/stern/releases/download/v1.22.0/stern_1.22.0_linux_amd64.tar.gz | tar zx --directory /usr/bin/ stern && chmod 755 /usr/bin/stern && stern --version
+    - curl --show-error --silent --location https://github.com/kubernetes/kompose/releases/download/v1.32.0/kompose-linux-amd64 -o /usr/local/bin/kompose && chmod a+x /usr/local/bin/kompose && kompose version
+    # show logs asynchronously. Timeout to avoid hanging indefinitely when an error occurs in script section
+    - timeout 1200 stern -n $NAMESPACE "app-" --tail=0 --color=always & # in background, tail new logs if any (current and incoming) pod with this regex as name
+    - timeout 1200 kubectl -n $NAMESPACE get events --watch-only & # in background, tail new events in background
   script:
-    - kubectl config get-contexts
-    - kubectl get use-context
+
     # first delete CrashLoopBackOff pods, polluting logs
     -  cp .env deploy/.env
-    - kubectl 
     - kubectl -n $NAMESPACE delete pod `kubectl -n $NAMESPACE get pods --selector app.kubernetes.io/component=$MODULE | awk '$3 == "CrashLoopBackOff" {print $1}'` || true
     # now deploying
     - kompose convert -f deploy/docker-compose.yml -f deploy/docker-compose.kube.yml --out k8s/
