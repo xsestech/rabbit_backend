@@ -86,7 +86,7 @@ deploy:
     name: review/$CI_COMMIT_REF_NAME
     url: https://$CI_ENVIRONMENT_SLUG-cluster.aigang.ru
   variables:
-    NAMESPACE: $CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG
+    NAMESPACE: $CI_ENVIRONMENT_SLUG
     IMAGE: $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
     URL: $CI_ENVIRONMENT_SLUG-cluster.aigang.ru
     KUBE_CONTEXT: ai-gang/rabbit_backend:cluster
