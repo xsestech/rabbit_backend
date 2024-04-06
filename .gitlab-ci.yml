@@ -78,6 +78,8 @@ deploy:
   stage: deploy
   rules:
   - if: $CI_COMMIT_REF_PROTECTED == "true"
+  tags:
+    - docker-runner
   image: alpine/k8s:1.29.1
   variables:
     NAMESPACE: $CI_COMMIT_REF_SLUG
@@ -111,4 +113,3 @@ deploy:
   after_script: # show namespace content
     - kubectl config use-context $KUBE_CONTEXT
     - kubectl -n $NAMESPACE get deploy,service,ingress,pod
-
