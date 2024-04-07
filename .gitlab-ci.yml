@@ -92,7 +92,7 @@ deploy:
     KUBE_CONTEXT: ai-gang/rabbit_backend:cluster
   before_script:
     # init namespace
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - kubectl create secret docker-registry gitlab-secret --docker-server=$CI_REGISTRY--docker-username=$CI_REGISTRY_USER --docker-password=$CI_REGISTRY_PASSWORD
     - echo USERS_SECRET=$USERS_SECRET >> deploy/.env
     - kubectl config use-context $KUBE_CONTEXT
     - kubectl create namespace $NAMESPACE || true
