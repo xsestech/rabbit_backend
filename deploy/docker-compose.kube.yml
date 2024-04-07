@@ -12,8 +12,6 @@ services:
   db:
     ports: [5432]
   redis:
-    labels:
-      kompose.service.healthcheck.readiness.test: sh -c redis-cli ping
     ports: [6379]
   migrator:
     image: $IMAGE
