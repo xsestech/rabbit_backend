@@ -3,6 +3,7 @@ services:
   api:
     image: $IMAGE
     labels:
+      kompose.image-pull-secret: gitlab-secret
       kompose.service.expose: $URL
       nginx.ingress.kubernetes.io/rewrite-target: /$1
       ingress.kubernetes.io/ssl-redirect: 'false'
