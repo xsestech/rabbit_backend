@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: ./deploy/Dockerfile
       target: prod
-    image: rabbit_backend:${RABBIT_BACKEND_VERSION:-latest}
+    image: rabbit-backend:${RABBIT_BACKEND_VERSION:-latest}
     restart: always
     env_file: [.env]
     depends_on:
@@ -16,42 +16,42 @@ services:
 
     environment:
       RABBIT_BACKEND_HOST: 0.0.0.0
-      RABBIT_BACKEND_DB_HOST: rabbit_backend-db
+      RABBIT_BACKEND_DB_HOST: rabbit-backend-db
       RABBIT_BACKEND_DB_PORT: 5432
-      RABBIT_BACKEND_DB_USER: rabbit_backend
-      RABBIT_BACKEND_DB_PASS: rabbit_backend
-      RABBIT_BACKEND_DB_BASE: rabbit_backend
-      RABBIT_BACKEND_REDIS_HOST: rabbit_backend-redis
+      RABBIT_BACKEND_DB_USER: rabbit-backend
+      RABBIT_BACKEND_DB_PASS: rabbit-backend
+      RABBIT_BACKEND_DB_BASE: rabbit-backend
+      RABBIT_BACKEND_REDIS_HOST: rabbit-backend-redis
   db:
     image: postgres:13.8-bullseye
-    hostname: rabbit_backend-db
+    hostname: rabbit-backend-db
     environment:
-      POSTGRES_PASSWORD: rabbit_backend
-      POSTGRES_USER: rabbit_backend
-      POSTGRES_DB: rabbit_backend
-    volumes: [rabbit_backend-db-data:/var/lib/postgresql/data]
+      POSTGRES_PASSWORD: rabbit-backend
+      POSTGRES_USER: rabbit-backend
+      POSTGRES_DB: rabbit-backend
+    volumes: [rabbit-backend-db-data:/var/lib/postgresql/data]
     restart: always
     healthcheck:
-      test: pg_isready -U rabbit_backend
+      test: pg_isready -U rabbit-backend
       interval: 2s
       timeout: 3s
       retries: 40
   migrator:
-    image: rabbit_backend:${RABBIT_BACKEND_VERSION:-latest}
+    image: rabbit-backend:${RABBIT_BACKEND_VERSION:-latest}
     restart: 'no'
     command: alembic upgrade head
     environment:
-      RABBIT_BACKEND_DB_HOST: rabbit_backend-db
+      RABBIT_BACKEND_DB_HOST: rabbit-backend-db
       RABBIT_BACKEND_DB_PORT: 5432
-      RABBIT_BACKEND_DB_USER: rabbit_backend
-      RABBIT_BACKEND_DB_PASS: rabbit_backend
-      RABBIT_BACKEND_DB_BASE: rabbit_backend
+      RABBIT_BACKEND_DB_USER: rabbit-backend
+      RABBIT_BACKEND_DB_PASS: rabbit-backend
+      RABBIT_BACKEND_DB_BASE: rabbit-backend
     depends_on:
       db:
         condition: service_healthy
   redis:
     image: bitnami/redis:6.2.5
-    hostname: rabbit_backend-redis
+    hostname: rabbit-backend-redis
     restart: always
     environment:
       ALLOW_EMPTY_PASSWORD: 'yes'
@@ -61,5 +61,5 @@ services:
       timeout: 3s
       retries: 50
 volumes:
-  rabbit_backend-db-data:
-    name: rabbit_backend-db-data
+  rabbit-backend-db-data:
+    name: rabbit-backend-db-data
