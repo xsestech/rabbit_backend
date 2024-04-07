@@ -10,10 +10,10 @@ services:
       nginx.ingress.kubernetes.io/backend-protocol: HTTP
     ports: [8000]
   db:
-    labels:
-      kompose.service.healthcheck.readiness.test: sh -c redis-cli ping
     ports: [5432]
   redis:
+    labels:
+      kompose.service.healthcheck.readiness.test: sh -c redis-cli ping
     ports: [6379]
   migrator:
     image: $IMAGE
