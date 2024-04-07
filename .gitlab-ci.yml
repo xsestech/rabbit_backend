@@ -95,8 +95,6 @@ deploy:
     - echo USERS_SECRET=$USERS_SECRET >> deploy/.env
     - kubectl config use-context $KUBE_CONTEXT
     - kubectl create namespace $NAMESPACE || true
-    - kubectl create secret docker-registry gitlab-secret --docker-server=$CI_REGISTRY --docker-username=$CI_REGISTRY_USER --docker-password=$CI_REGISTRY_PASSWORD
-    # download tools
     - curl --show-error --silent --location https://github.com/stern/stern/releases/download/v1.22.0/stern_1.22.0_linux_amd64.tar.gz | tar zx --directory /usr/bin/ stern && chmod 755 /usr/bin/stern && stern --version
     - curl --show-error --silent --location https://github.com/kubernetes/kompose/releases/download/v1.32.0/kompose-linux-amd64 -o /usr/local/bin/kompose && chmod a+x /usr/local/bin/kompose && kompose version
     # show logs asynchronously. Timeout to avoid hanging indefinitely when an error occurs in script section
