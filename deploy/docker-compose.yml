@@ -32,7 +32,7 @@ services:
     volumes: [rabbit-backend-db-data:/var/lib/postgresql/data]
     restart: always
     healthcheck:
-      test: pg_isready -U rabbit-backend
+      test: ["CMD", "pg_isready", "-U", "rabbit-backend"]
       interval: 2s
       timeout: 3s
       retries: 40
@@ -56,7 +56,7 @@ services:
     environment:
       ALLOW_EMPTY_PASSWORD: 'yes'
     healthcheck:
-      test: sh -c redis-cli ping
+      test: ["CMD", "sh", "-c", "redis-cli", "ping"]
       interval: 1s
       timeout: 3s
       retries: 50
