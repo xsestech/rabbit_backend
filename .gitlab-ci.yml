@@ -83,8 +83,8 @@ deploy:
   image: alpine/k8s:1.29.1
   # environment: production
   environment:
-    name: prod-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG
-    url: https://$CI_ENVIRONMENT_SLUG-cluster.aigang.ru
+    name: prod-$PROJECT_SLUG-$CI_COMMIT_REF_SLUG
+    url: https://$CI_ENVIRONMENT_NAME-cluster.aigang.ru
   variables:
     NAMESPACE: $CI_ENVIRONMENT_SLUG
     IMAGE: $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
