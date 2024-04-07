@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: ./deploy/Dockerfile
       target: prod
-    image: rabbit-backend:${RABBIT_BACKEND_VERSION:-latest}
+    image: ${RABBIT_REGISTRY}rabbit-backend:${RABBIT_BACKEND_VERSION:-latest}
     restart: always
     env_file: [.env]
     depends_on:
@@ -37,7 +37,7 @@ services:
       timeout: 3s
       retries: 40
   migrator:
-    image: rabbit-backend:${RABBIT_BACKEND_VERSION:-latest}
+    image: ${RABBIT_REGISTRY}rabbit-backend:${RABBIT_BACKEND_VERSION:-latest}
     restart: 'no'
     command: alembic upgrade head
     environment:
