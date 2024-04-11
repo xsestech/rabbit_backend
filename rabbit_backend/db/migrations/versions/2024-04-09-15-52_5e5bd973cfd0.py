@@ -1,14 +1,14 @@
-"""Initial migration.
+"""empty message
 
-Revision ID: 819cbf6e030b
-Revises:
-Create Date: 2021-08-16 16:53:05.484024
+Revision ID: 5e5bd973cfd0
+Revises: 919c97dc10ac
+Create Date: 2024-04-09 15:52:42.897669
 
 """
 
 # revision identifiers, used by Alembic.
-revision = "819cbf6e030b"
-down_revision = None
+revision = "5e5bd973cfd0"
+down_revision = "919c97dc10ac"
 branch_labels = None
 depends_on = None
 

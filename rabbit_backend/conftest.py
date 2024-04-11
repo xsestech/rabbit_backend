@@ -18,6 +18,7 @@ from rabbit_backend.db.utils import create_database, drop_database
 from rabbit_backend.services.redis.dependency import get_redis_pool
 from rabbit_backend.settings import settings
 from rabbit_backend.web.application import get_app
+from rabbit_backend.web.util import get_api_prefix
 
 
 @pytest.fixture(scope="session")
@@ -128,5 +129,8 @@ async def client(
     :param fastapi_app: the application.
     :yield: client for the app.
     """
-    async with AsyncClient(app=fastapi_app, base_url="http://test") as ac:
+    async with AsyncClient(
+        app=fastapi_app,
+        base_url=f"http://test/{get_api_prefix()}",
+    ) as ac:
         yield ac
