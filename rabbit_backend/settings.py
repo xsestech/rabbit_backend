@@ -67,7 +67,9 @@ class Settings(BaseSettings):
         """
         Assemble database URL from settings.
 
-        :return: database URL.
+        Returns
+        -------
+            database URL.
         """
         return URL.build(
             scheme="postgresql+asyncpg",

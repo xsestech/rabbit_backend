@@ -21,8 +21,10 @@ class InterceptHandler(logging.Handler):
     def emit(self, record: logging.LogRecord) -> None:  # pragma: no cover
         """
         Propagates logs to loguru.
-
-        :param record: record to log.
+        Parameters
+        ---------
+        record:
+            record to log.
         """
         try:
             level: Union[str, int] = logger.level(record.levelname).name

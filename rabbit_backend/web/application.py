@@ -14,8 +14,9 @@ def get_app() -> FastAPI:
     Get FastAPI application.
 
     This is the main constructor of an application.
-
-    :return: application.
+    Returns
+    -------
+        Application.
     """
     configure_logging()
     api_prefix = get_api_prefix()

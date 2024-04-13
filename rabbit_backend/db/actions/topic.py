@@ -3,7 +3,7 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from rabbit_backend.db.dao.topic_dao import TopicDAO
-from rabbit_backend.db.exeptions import backend_exception
+from rabbit_backend.db.exceptions import backend_exception
 from rabbit_backend.db.models.topics import Topic
 
 # TODO: аннотация типов
@@ -30,7 +30,7 @@ async def _get_all_topics_from_db(session: AsyncSession) -> dict[str, str]:
         topics = await topic_dao.get_all_topics()
         if topics:
             return {str(topic[0]): topic[1] for topic in topics}
-        return dict()
+        return {}
 
 
 @backend_exception

@@ -25,8 +25,10 @@ from rabbit_backend.web.util import get_api_prefix
 def anyio_backend() -> str:
     """
     Backend for anyio pytest plugin.
-
-    :return: backend name.
+    Returns
+    -------
+    str
+        Backend name
     """
     return "asyncio"
 
@@ -36,7 +38,9 @@ async def _engine() -> AsyncGenerator[AsyncEngine, None]:
     """
     Create engine and databases.
 
-    :yield: new engine.
+    Yields
+    ------
+        New engine
     """
     from rabbit_backend.db.meta import meta  # noqa: WPS433
     from rabbit_backend.db.models import load_all_models  # noqa: WPS433
@@ -66,8 +70,13 @@ async def dbsession(
     Fixture that returns a SQLAlchemy session with a SAVEPOINT, and the rollback to it
     after the test completes.
 
-    :param _engine: current engine.
-    :yields: async session.
+    Parameters
+    ---------
+    _engine:
+        current engine.
+    Yields
+    ------
+        Async session.
     """
     connection = await _engine.connect()
     trans = await connection.begin()
@@ -110,7 +119,9 @@ def fastapi_app(
     """
     Fixture for creating FastAPI app.
 
-    :return: fastapi app with mocked dependencies.
+    Returns
+    -------
+        fastapi app with mocked dependencies.
     """
     application = get_app()
     application.dependency_overrides[get_db_session] = lambda: dbsession

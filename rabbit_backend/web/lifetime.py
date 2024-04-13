@@ -18,7 +18,9 @@ def _setup_db(app: FastAPI) -> None:  # pragma: no cover
     session_factory for creating sessions
     and stores them in the application's state property.
 
-    :param app: fastAPI application.
+    Parameters
+    app:
+        FastAPI application.
     """
     engine = create_async_engine(str(settings.db_url), echo=settings.db_echo)
     session_factory = async_sessionmaker(
@@ -71,8 +73,14 @@ def register_shutdown_event(
     """
     Actions to run on application's shutdown.
 
-    :param app: fastAPI application.
-    :return: function that actually performs actions.
+    Parameters
+    ----------
+    app:
+        fastAPI application.
+
+    Returns
+    -------
+        function that actually performs actions.
     """
 
     @app.on_event("shutdown")
