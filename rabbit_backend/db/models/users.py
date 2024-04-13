@@ -1,4 +1,3 @@
-# type: ignore
 import uuid
 
 from fastapi import Depends
@@ -42,11 +41,16 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
 async def get_user_db(
     session: AsyncSession = Depends(get_db_session),
 ) -> SQLAlchemyUserDatabase:
-    """
-    Yield a SQLAlchemyUserDatabase instance.
+    """Yield a SQLAlchemyUserDatabase instance.
 
-    :param session: asynchronous SQLAlchemy session.
-    :yields: instance of SQLAlchemyUserDatabase.
+    Parameters
+    ----------
+    session:
+        asynchronous SQLAlchemy session.
+    Yields
+    ------
+    SQLAlchemyUserDatabase
+        Instance of SQLAlchemyUserDatabase.
     """
     yield SQLAlchemyUserDatabase(session, User)
 
@@ -57,17 +61,25 @@ async def get_user_manager(
     """
     Yield a UserManager instance.
 
-    :param user_db: SQLAlchemy user db instance
-    :yields: an instance of UserManager.
+    Parameters
+    ----------
+    user_db: SQLAlchemy user db instance
+
+    Yields
+    ------
+    UserManager
+        An instance of UserManager.
     """
     yield UserManager(user_db)
 
 
 def get_jwt_strategy() -> JWTStrategy:
-    """
-    Return a JWTStrategy in order to instantiate it dynamically.
+    """Return a JWTStrategy in order to instantiate it dynamically.
 
-    :returns: instance of JWTStrategy with provided settings.
+    Returns
+    -------
+    JWTStrategy
+        Instance of JWTStrategy with provided settings.
     """
     return JWTStrategy(secret=settings.users_secret, lifetime_seconds=None)
 

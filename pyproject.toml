@@ -49,6 +49,7 @@ httpx = "^0.23.3"
 
 [tool.poetry.group.dev.dependencies]
 importlib-metadata = "<5"
+sphinx = "^7.2.6"
 
 [tool.isort]
 profile = "black"
