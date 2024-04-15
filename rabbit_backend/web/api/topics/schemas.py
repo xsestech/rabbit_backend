@@ -14,3 +14,6 @@ class Topic(TopicCreate):
     """Pydantic model for topic."""
 
     id: UUID4
+
+    class Config:
+        from_attributes = True

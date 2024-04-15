@@ -85,7 +85,9 @@ class Settings(BaseSettings):
         """
         Assemble REDIS URL from settings.
 
-        :return: redis URL.
+        Returns
+        -------
+            redis URL.
         """
         path = ""
         if self.redis_base is not None:

@@ -10,10 +10,10 @@ from rabbit_backend.web.util import get_api_prefix
 
 
 def get_app() -> FastAPI:
-    """
-    Get FastAPI application.
+    """Get FastAPI application.
 
     This is the main constructor of an application.
+
     Returns
     -------
         Application.

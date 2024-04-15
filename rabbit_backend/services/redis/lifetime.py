@@ -8,7 +8,10 @@ def init_redis(app: FastAPI) -> None:  # pragma: no cover
     """
     Creates connection pool for redis.
 
-    :param app: current fastapi application.
+    Parameters
+    ----------
+    app : FastAPI
+         current fastapi application.
     """
     app.state.redis_pool = ConnectionPool.from_url(
         str(settings.redis_url),
@@ -19,6 +22,9 @@ async def shutdown_redis(app: FastAPI) -> None:  # pragma: no cover
     """
     Closes redis connection pool.
 
-    :param app: current FastAPI app.
+    Parameters
+    ----------
+    app : FastAPI
+         current fastapi application.
     """
     await app.state.redis_pool.disconnect()

@@ -45,8 +45,9 @@ async def get_user_db(
 
     Parameters
     ----------
-    session:
+    session: AsyncSession
         asynchronous SQLAlchemy session.
+
     Yields
     ------
     SQLAlchemyUserDatabase
@@ -63,7 +64,8 @@ async def get_user_manager(
 
     Parameters
     ----------
-    user_db: SQLAlchemy user db instance
+    user_db: SQLAlchemyUserDatabase
+        SQLAlchemy user db instance
 
     Yields
     ------

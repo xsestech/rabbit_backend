@@ -9,13 +9,14 @@ async def get_db_session(request: Request) -> AsyncGenerator[AsyncSession, None]
 
     Parameters
     ----------
-    request:
+    request: Request
         current request
+
 
     Yields
     ------
     AsyncGenerator[AsyncSession, None]
-       Database session
+        Database session
     """
     session: AsyncSession = request.app.state.db_session_factory()
 
