@@ -1,8 +1,10 @@
 import re
 from typing import Any, Dict
 
+from starlette import status
+
 BACKEND_ERROR_MESSAGE_LEN: int = 100
-CONSTANT_CASE_REGEX: re.Pattern = re.compile(r"^[A-Z_]+$")
+CONSTANT_CASE_REGEX: re.Pattern = re.compile("^[A-Z_]+$")
 BACKEND_ERROR_CODE_LEN: int = 50
 
 
@@ -29,42 +31,41 @@ class BackendError(Exception):
 
     """
 
-    def __init__(self, error_code: str, msg: str, status_code: int) -> None:
+    # Suppressed WPS238, because I think, that 4 exceptions in this func is fine.
+    def __init__(  # noqa: WPS238
+        self,
+        error_code: str,
+        msg: str,
+        status_code: int,
+    ) -> None:
         if not (error_code or msg or status_code):
             raise NotImplementedError("Error, status code or message wasn't defined")
         if not re.fullmatch(CONSTANT_CASE_REGEX, error_code):
             raise ValueError("Error code should be in CONSTANT_CASE")
-        if (
-            len(msg) > BACKEND_ERROR_MESSAGE_LEN
-            or len(error_code) > BACKEND_ERROR_CODE_LEN
-        ):
-            raise ValueError("Error code or message is too long")
+        if len(msg) > BACKEND_ERROR_MESSAGE_LEN:
+            raise ValueError("Message is too long")
+        if len(error_code) > BACKEND_ERROR_CODE_LEN:
+            raise ValueError("Error code is too long")
         self._status_code = status_code
         self._error_code = error_code
-        self.__msg = msg
+        self._msg = msg
 
     @property
-    def detail(self) -> Dict[str, Any]:  # noqa: DAR201
-        """A dictionary of error detail.
-
-        Example of `detail`:
-        `{'msg': "message text", 'code': "ERROR_CODE"}`.
-
-        """
-        return {
-            "msg": self.__msg,
+    def detail(self) -> Dict[str, Any]:
+        """A dictionary of error detail."""
+        return {  # noqa: DAR201
+            "msg": self._msg,
             "code": self._error_code,
         }
 
     @property
     def status_code(self) -> int:
         """int: HTTP status code."""
-        return self._status_code
+        return self._status_code  # noqa: DAR201
 
 
 class TopicNameIsNotUniqueError(BackendError):
-    """This exception is raised when the user tries to create a topic with a name that
-    already exists.
+    """Raised when the user tries to create a topic with a name that already exists.
 
     Child of `BackendError`
 
@@ -78,12 +79,12 @@ class TopicNameIsNotUniqueError(BackendError):
         super().__init__(
             error_code="UNIQUE_NAME",
             msg="This topic name is already exists",
-            status_code=http.HTTPStatus.BAD_REQUEST,
+            status_code=status.HTTP_400_BAD_REQUEST,
         )
 
 
 class TopicIdDoesNotExistsError(BackendError):
-    """This exception is raised when the user tries to delete a topic that doesn't exist
+    """Raised when the user tries to delete a topic that doesn't exist.
 
     Child of `BackendError`
 
@@ -97,5 +98,5 @@ class TopicIdDoesNotExistsError(BackendError):
         super().__init__(
             error_code="INVALID_TOPIC_ID",
             msg="This topic ID doesn't exist. Check the entered ID",
-            status_code=404,
+            status_code=status.HTTP_400_BAD_REQUEST,
         )

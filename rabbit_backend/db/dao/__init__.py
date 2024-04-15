@@ -1,1 +1,1 @@
-"""Data Access Objects for all models"""
+"""Data Access Objects for all models."""

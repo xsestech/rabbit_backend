@@ -18,13 +18,13 @@ from rabbit_backend.db.utils import create_database, drop_database
 from rabbit_backend.services.redis.dependency import get_redis_pool
 from rabbit_backend.settings import settings
 from rabbit_backend.web.application import get_app
-from rabbit_backend.web.util import get_api_prefix
 
 
 @pytest.fixture(scope="session")
 def anyio_backend() -> str:
     """
     Backend for anyio pytest plugin.
+
     Returns
     -------
     str
@@ -64,23 +64,22 @@ async def _engine() -> AsyncGenerator[AsyncEngine, None]:
 async def dbsession(
     _engine: AsyncEngine,
 ) -> AsyncGenerator[AsyncSession, None]:
-    """
-    Get session to database.
+    """Get session to database.
 
     Fixture that returns a SQLAlchemy session with a SAVEPOINT, and the rollback to it
     after the test completes.
 
     Parameters
-    ---------
-    _engine:
-        current engine.
+    ----------
+    _engine: AsyncEngine
+        current engine
+
     Yields
     ------
         Async session.
     """
     connection = await _engine.connect()
     trans = await connection.begin()
-
     session_maker = async_sessionmaker(
         connection,
         expire_on_commit=False,
@@ -100,7 +99,9 @@ async def fake_redis_pool() -> AsyncGenerator[ConnectionPool, None]:
     """
     Get instance of a fake redis.
 
-    :yield: FakeRedis instance.
+    Yields
+    ------
+        FakeRedis instance.
     """
     server = FakeServer()
     server.connected = True
@@ -137,11 +138,19 @@ async def client(
     """
     Fixture that creates client for requesting server.
 
-    :param fastapi_app: the application.
-    :yield: client for the app.
+    Parameters
+    ----------
+    anyio_backend: Any
+        backend for anyio pytest plugin.
+    fastapi_app: FastAPI
+        the application.
+
+    Yields
+    ------
+        client for the app.
     """
     async with AsyncClient(
         app=fastapi_app,
-        base_url=f"http://test/{get_api_prefix()}",
+        base_url="http://test/",
     ) as ac:
         yield ac

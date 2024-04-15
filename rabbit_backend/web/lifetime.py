@@ -19,7 +19,8 @@ def _setup_db(app: FastAPI) -> None:  # pragma: no cover
     and stores them in the application's state property.
 
     Parameters
-    app:
+    ----------
+    app: FastAPI
         FastAPI application.
     """
     engine = create_async_engine(str(settings.db_url), echo=settings.db_echo)
@@ -35,7 +36,10 @@ def setup_prometheus(app: FastAPI) -> None:  # pragma: no cover
     """
     Enables prometheus integration.
 
-    :param app: current application.
+    Parameters
+    ----------
+    app: FastAPI
+        current application.
     """
     PrometheusFastApiInstrumentator(should_group_status_codes=False).instrument(
         app,
@@ -51,8 +55,14 @@ def register_startup_event(
     This function uses fastAPI app to store data
     in the state, such as db_engine.
 
-    :param app: the fastAPI application.
-    :return: function that actually performs actions.
+    Parameters
+    ----------
+    app: FastAPI
+        the fastAPI application.
+
+    Returns
+    -------
+        function that actually performs actions.
     """
 
     @app.on_event("startup")
@@ -75,7 +85,7 @@ def register_shutdown_event(
 
     Parameters
     ----------
-    app:
+    app: FastAPI
         fastAPI application.
 
     Returns
