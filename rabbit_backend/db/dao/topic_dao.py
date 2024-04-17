@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-from typing import Optional
 from uuid import UUID
 
-from loguru import logger
 from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -53,6 +51,8 @@ class TopicDAO:
             new_topic = Topic(topic_name=topic_name)
             self._db_session.add(new_topic)
             await self._db_session.flush()
+            await self._db_session.commit()
+            await self._db_session.refresh(new_topic)
             return new_topic
         # Here we disable the WPS329 because we need to separate view and logic
         except IntegrityError:  # noqa: WPS329
@@ -81,14 +81,14 @@ class TopicDAO:
         Topic
             The database topic object.
         """
-        query = select(Topic).where(topic_id == Topic.id)
+        query = select(Topic).where(Topic.id == topic_id)
         res = await self._db_session.execute(query)
         topic_row = res.fetchone()
         if not topic_row:
             raise TopicIdDoesNotExistsError
         return topic_row[0]
 
-    async def get_all_topics(self) -> Optional[list[Topic]]:
+    async def get_all_topics(self) -> list[Topic] | None:
         """Get all topics.
 
         Returns
@@ -99,10 +99,9 @@ class TopicDAO:
         query_result = await self._db_session.execute(
             select(Topic.id, Topic.topic_name),
         )
-        topics = query_result.fetchall()
+        topics = query_result.scalars().all()
         if not topics:
             return None
-        logger.debug(topics)
         return list(topics)
 
     async def update_topic_name(self, topic_id: UUID, name: str) -> Topic:
@@ -130,12 +129,12 @@ class TopicDAO:
         try:
             # WPS221 false positive. This line is not complex, actually.
             query = (
-                update(Topic).where(topic_id == Topic.id).values(topic_name=name)
+                update(Topic).where(Topic.id == topic_id).values(topic_name=name)
             )  # noqa: WPS221, E501
             result = await self._db_session.execute(query)
             if result.rowcount == 0:
                 raise TopicIdDoesNotExistsError
-            return result.fetchone()[0]
+            return result.scalars().one()
         # Here we disable the WPS329 because we need to separate view and logic
         except IntegrityError:  # noqa: WPS329
             raise TopicNameIsNotUniqueError
