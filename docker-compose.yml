@@ -9,7 +9,7 @@ services:
     image: rabbit_backend:${RABBIT_BACKEND_VERSION:-latest}
     restart: always
     env_file:
-    - deploy/.env
+    - .env
     depends_on:
       db:
         condition: service_healthy

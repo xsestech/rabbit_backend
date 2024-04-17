@@ -50,6 +50,7 @@ httpx = "^0.23.3"
 [tool.poetry.group.dev.dependencies]
 importlib-metadata = "<5"
 sphinx = "^7.2.6"
+sqlalchemy = {extras = ["mypy"], version = "^2.0.29"}
 
 [tool.isort]
 profile = "black"
@@ -58,6 +59,7 @@ src_paths = ["rabbit_backend",]
 
 [tool.mypy]
 strict = true
+plugins = "sqlalchemy.ext.mypy.plugin"
 ignore_missing_imports = true
 allow_subclassing_any = true
 allow_untyped_calls = true

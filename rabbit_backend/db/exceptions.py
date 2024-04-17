@@ -4,7 +4,7 @@ from typing import Any, Dict
 from starlette import status
 
 BACKEND_ERROR_MESSAGE_LEN: int = 100
-CONSTANT_CASE_REGEX: re.Pattern = re.compile("^[A-Z_]+$")
+CONSTANT_CASE_REGEX: re.Pattern[str] = re.compile("^[A-Z_]+$")
 BACKEND_ERROR_CODE_LEN: int = 50
 
 
