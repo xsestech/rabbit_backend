@@ -74,6 +74,8 @@ class GunicornApplication(BaseApplication):
         function's returns. We return python's path to
         the app's factory.
 
-        :returns: python path to app factory.
+        Returns
+        -------
+            Python path to app factory.
         """
         return import_app(self.app)

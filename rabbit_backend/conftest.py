@@ -25,7 +25,10 @@ def anyio_backend() -> str:
     """
     Backend for anyio pytest plugin.
 
-    :return: backend name.
+    Returns
+    -------
+    str
+        Backend name
     """
     return "asyncio"
 
@@ -35,7 +38,9 @@ async def _engine() -> AsyncGenerator[AsyncEngine, None]:
     """
     Create engine and databases.
 
-    :yield: new engine.
+    Yields
+    ------
+        New engine
     """
     from rabbit_backend.db.meta import meta  # noqa: WPS433
     from rabbit_backend.db.models import load_all_models  # noqa: WPS433
@@ -59,18 +64,22 @@ async def _engine() -> AsyncGenerator[AsyncEngine, None]:
 async def dbsession(
     _engine: AsyncEngine,
 ) -> AsyncGenerator[AsyncSession, None]:
-    """
-    Get session to database.
+    """Get session to database.
 
     Fixture that returns a SQLAlchemy session with a SAVEPOINT, and the rollback to it
     after the test completes.
 
-    :param _engine: current engine.
-    :yields: async session.
+    Parameters
+    ----------
+    _engine: AsyncEngine
+        current engine
+
+    Yields
+    ------
+        Async session.
     """
     connection = await _engine.connect()
     trans = await connection.begin()
-
     session_maker = async_sessionmaker(
         connection,
         expire_on_commit=False,
@@ -90,7 +99,9 @@ async def fake_redis_pool() -> AsyncGenerator[ConnectionPool, None]:
     """
     Get instance of a fake redis.
 
-    :yield: FakeRedis instance.
+    Yields
+    ------
+        FakeRedis instance.
     """
     server = FakeServer()
     server.connected = True
@@ -109,7 +120,9 @@ def fastapi_app(
     """
     Fixture for creating FastAPI app.
 
-    :return: fastapi app with mocked dependencies.
+    Returns
+    -------
+        fastapi app with mocked dependencies.
     """
     application = get_app()
     application.dependency_overrides[get_db_session] = lambda: dbsession
@@ -125,8 +138,19 @@ async def client(
     """
     Fixture that creates client for requesting server.
 
-    :param fastapi_app: the application.
-    :yield: client for the app.
+    Parameters
+    ----------
+    anyio_backend: Any
+        backend for anyio pytest plugin.
+    fastapi_app: FastAPI
+        the application.
+
+    Yields
+    ------
+        client for the app.
     """
-    async with AsyncClient(app=fastapi_app, base_url="http://test") as ac:
+    async with AsyncClient(
+        app=fastapi_app,
+        base_url="http://test/",
+    ) as ac:
         yield ac
