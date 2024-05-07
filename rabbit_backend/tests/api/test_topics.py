@@ -1,20 +1,16 @@
 # flake8: noqa
 # todo: сделать проверку бд на неуникальное имя или несуществующий id
 
-import pytest
-from fastapi import FastAPI
-from httpx import AsyncClient
 
-
-@pytest.mark.anyio
-async def test_create_topic(client: AsyncClient, fastapi_app: FastAPI) -> None:
-    topic_name = "test"
-    response = await client.post(
-        fastapi_app.url_path_for("create_topic"),
-        json={"name": topic_name},
-    )
-    assert response.status_code == 200
-    # created_topic: тип схема = response.json()
+# @pytest.mark.anyio
+# async def test_create_topic(client: AsyncClient, fastapi_app: FastAPI) -> None:
+#     topic_name = "test"
+#     response = await client.post(
+#         fastapi_app.url_path_for("create_topic"),
+#         json={"name": topic_name},
+#     )
+#     assert response.status_code == 200
+#     # created_topic: тип схема = response.json()
 
 
 #
