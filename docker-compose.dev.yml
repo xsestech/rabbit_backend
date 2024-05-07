@@ -15,4 +15,4 @@ services:
       RABBIT_BACKEND_RELOAD: "True"
   db:
     ports:
-      - "5431:5432"
+      - "5432:5432"

@@ -43,7 +43,7 @@ class Settings(BaseSettings):
     users_secret: str = os.getenv("USERS_SECRET", "")
     # Variables for the database
     db_host: str = "localhost"
-    db_port: int = 5431
+    db_port: int = 5432
     db_user: str = "rabbit_backend"
     db_pass: str = "rabbit_backend"
     db_base: str = "rabbit_backend"
