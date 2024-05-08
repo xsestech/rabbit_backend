@@ -60,12 +60,16 @@ class Settings(BaseSettings):
     # multiproc_dir. It's required for [uvi|guni]corn projects.
     prometheus_dir: Path = TEMP_DIR / "prom"
 
+    api_version: int = 1
+
     @property
     def db_url(self) -> URL:
         """
         Assemble database URL from settings.
 
-        :return: database URL.
+        Returns
+        -------
+            database URL.
         """
         return URL.build(
             scheme="postgresql+asyncpg",
@@ -81,7 +85,9 @@ class Settings(BaseSettings):
         """
         Assemble REDIS URL from settings.
 
-        :return: redis URL.
+        Returns
+        -------
+            redis URL.
         """
         path = ""
         if self.redis_base is not None:

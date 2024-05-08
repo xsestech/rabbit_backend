@@ -1,123 +1,59 @@
 stages:
 - "test"
-- "build"
-- "deploy"
 
-# .test-template:
-#   stage: test
-#   image: python:3.9.6-slim-buster
-#   tags:
-#   - docker-runner
-#   except:
-#   - tags
-#   before_script:
-#   - pip install poetry==1.4.2
-#   - poetry config virtualenvs.create false
-#   - poetry install
-
-# black:
-#   extends:
-#   - .test-template
-#   script:
-#   - black --check .
-
-# flake8:
-#   extends:
-#   - .test-template
-#   script:
-#   - flake8 --count .
-
-# mypy:
-#   extends:
-#   - .test-template
-#   script:
-#   - mypy .
-
-# pytest:
-#   extends:
-#   - .test-template
-#   services:
-#   - name: postgres:13.8-bullseye
-#     alias: database
-#   variables:
-
-#     # Postgresql variables
-#     RABBIT_BACKEND_DB_HOST: database
-#     POSTGRES_PASSWORD: rabbit_backend
-#     POSTGRES_USER: rabbit_backend
-#     POSTGRES_DB: rabbit_backend
-#   script:
-#   - apt update
-#   - apt install -y wait-for-it
-#   - wait-for-it -t 180 $RABBIT_BACKEND_DB_HOST:5432
-#   - pytest -vv --junitxml=report.xml --cov="rabbit_backend" .
-#   - coverage xml
-#   artifacts:
-#     when: always
-#     reports:
-#       junit: report.xml
-#       coverage_report:
-#         coverage_format: cobertura
-#         path: coverage.xml
-build:
-  image: docker:20.10.16
-  rules:
-  - if: $CI_COMMIT_REF_PROTECTED == "true"
-  tags:
-  - docker
-  stage: build
-  variables:
-    IMAGE: $CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
-  services:
-  - docker:20.10.16-dind
-  script:
-  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  - docker build -t $CI_REGISTRY/$IMAGE .  -f deploy/Dockerfile
-  - docker push $CI_REGISTRY/$IMAGE
-deploy:
-  stage: deploy
-  rules:
-  - if: $CI_COMMIT_REF_PROTECTED == "true"
+.test-template:
+  stage: test
+  image: python:3.11-slim
   tags:
   - docker-runner
-  image: alpine/k8s:1.29.1
-  # environment: production
-  environment:
-    name: prod-$PROJECT_SLUG-$CI_COMMIT_REF_SLUG
-    url: https://$CI_ENVIRONMENT_NAME-cluster.aigang.ru
-  variables:
-    NAMESPACE: $CI_ENVIRONMENT_SLUG
-    IMAGE: $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG
-    URL: $CI_ENVIRONMENT_SLUG-cluster.aigang.ru
-    KUBE_CONTEXT: ai-gang/rabbit_backend:cluster
+  except:
+  - tags
   before_script:
-    # init namespace
-  - echo USERS_SECRET=$USERS_SECRET >> deploy/.env
-  - export RABBIT_REGISTRY=${CI_REGISTRY}/
-  - export RABBIT_VERSION=$CI_COMMIT_REF_SLUG
-  - kubectl config use-context $KUBE_CONTEXT
-  - kubectl create namespace $NAMESPACE || true
-  - kubectl create secret docker-registry gitlab-secret --docker-server=$CI_REGISTRY --docker-username=$CI_REGISTRY_USER --docker-password=$CI_REGISTRY_PASSWORD -n=$NAMESPACE || true
-  - curl --show-error --silent --location https://github.com/stern/stern/releases/download/v1.22.0/stern_1.22.0_linux_amd64.tar.gz | tar zx --directory /usr/bin/ stern && chmod 755 /usr/bin/stern && stern --version
-  - curl --show-error --silent --location https://github.com/kubernetes/kompose/releases/download/v1.32.0/kompose-linux-amd64 -o /usr/local/bin/kompose && chmod a+x /usr/local/bin/kompose && kompose version
-    # show logs asynchronously. Timeout to avoid hanging indefinitely when an error occurs in script section
-  - timeout 1200 stern -n $NAMESPACE "app-" --tail=0 --color=always &   # in background, tail new logs if any (current and incoming) pod with this regex as name
-  - timeout 1200 kubectl -n $NAMESPACE get events --watch-only &   # in background, tail new events in background
-  script:
+  - pip install poetry==1.4.2
+  - poetry config virtualenvs.create false
+  - poetry install
 
-    # first delete CrashLoopBackOff pods, polluting logs
-  - kubectl -n $NAMESPACE delete pod `kubectl -n $NAMESPACE get pods --selector app.kubernetes.io/component=$MODULE | awk '$3 == "CrashLoopBackOff" {print $1}'` || true
-    # now deploying
-  - kompose convert -f deploy/docker-compose.yml -f deploy/docker-compose.kube.yml --out k8s/
-  - kubectl apply -n $NAMESPACE -f k8s/
-  - echo -e "\e[93;1mWaiting for the new app version to be fully operational...\e[0m"
-    # waiting for successful deployment
-  - kubectl -n $NAMESPACE rollout status deploy/db
-  - kubectl -n $NAMESPACE rollout status deploy/api
-  - kubectl -n $NAMESPACE rollout status deploy/redis
-    # on any error before this line, the script will still wait for these threads to complete, so the initial timeout is important. Adding these commands to after_script does not help
-  - pkill stern || true
-  - pkill kubectl || true
-  after_script: # show namespace content
-  - kubectl config use-context $KUBE_CONTEXT
-  - kubectl -n $NAMESPACE get deploy,service,ingress,pod
+black:
+  extends:
+  - .test-template
+  script:
+  - black --check .
+
+flake8:
+  extends:
+  - .test-template
+  script:
+  - flake8 --count .
+
+mypy:
+  extends:
+  - .test-template
+  script:
+  - mypy .
+
+pytest:
+  extends:
+  - .test-template
+  services:
+  - name: postgres:13.8-bullseye
+    alias: database
+  variables:
+
+    # Postgresql variables
+    RABBIT_BACKEND_DB_HOST: database
+    POSTGRES_PASSWORD: rabbit_backend
+    POSTGRES_USER: rabbit_backend
+    POSTGRES_DB: rabbit_backend
+  script:
+  - apt update
+  - apt install -y wait-for-it
+  - wait-for-it -t 180 $RABBIT_BACKEND_DB_HOST:5432
+  - pytest -vv --junitxml=report.xml --cov="rabbit_backend" .
+  - coverage xml
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml

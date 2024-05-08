@@ -12,7 +12,7 @@ def set_multiproc_dir() -> None:
     Sets mutiproc_dir env variable.
 
     This function cleans up the multiprocess directory
-    and recreates it. This actions are required by prometheus-client
+    and recreates it. These actions are required by prometheus-client
     to share metrics between processes.
 
     After cleanup, it sets two variables.
@@ -48,7 +48,7 @@ def main() -> None:
     else:
         # We choose gunicorn only if reload
         # option is not used, because reload
-        # feature doen't work with Uvicorn workers.
+        # feature doesn't work with Uvicorn workers.
         GunicornApplication(
             "rabbit_backend.web.application:get_app",
             host=settings.host,

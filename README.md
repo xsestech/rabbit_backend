@@ -106,6 +106,11 @@ By default it runs:
 
 You can read more about pre-commit here: https://pre-commit.com/
 
+## Remove DB
+```bash
+docker-compose -f deploy/docker-compose.yml -f deploy/docker-compose.dev.yml --project-directory . rm -v
+```
+
 ## Migrations
 
 If you want to migrate your database, you should run following commands:
@@ -153,7 +158,7 @@ For running tests on your local machine.
 1. you need to start a database.
 
 I prefer doing it with docker:
-```
+```bash
 docker run -p "5432:5432" -e "POSTGRES_PASSWORD=rabbit_backend" -e "POSTGRES_USER=rabbit_backend" -e "POSTGRES_DB=rabbit_backend" postgres:13.8-bullseye
 ```
 

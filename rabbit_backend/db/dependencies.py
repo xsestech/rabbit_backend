@@ -5,11 +5,18 @@ from starlette.requests import Request
 
 
 async def get_db_session(request: Request) -> AsyncGenerator[AsyncSession, None]:
-    """
-    Create and get database session.
+    """Create and get database session.
 
-    :param request: current request.
-    :yield: database session.
+    Parameters
+    ----------
+    request: Request
+        current request
+
+
+    Yields
+    ------
+    AsyncGenerator[AsyncSession, None]
+        Database session
     """
     session: AsyncSession = request.app.state.db_session_factory()
 

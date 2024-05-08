@@ -10,6 +10,10 @@ async def get_redis_pool(
     """
     Returns connection pool.
 
+    I use pools, so you don't acquire connection till the end of the handler.
+
+    Example
+    -------
     You can use it like this:
 
     >>> from redis.asyncio import ConnectionPool, Redis
@@ -18,9 +22,14 @@ async def get_redis_pool(
     >>>     async with Redis(connection_pool=redis_pool) as redis:
     >>>         await redis.get('key')
 
-    I use pools, so you don't acquire connection till the end of the handler.
+    Parameters
+    ----------
+    request: Request
+        current request.
 
-    :param request: current request.
-    :returns:  redis connection pool.
+    Returns
+    -------
+    AsyncGenerator[Redis, None]
+        redis connection pool.
     """
     return request.app.state.redis_pool
