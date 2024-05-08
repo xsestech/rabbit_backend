@@ -1,0 +1,73 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile
+      target: prod
+    image: rabbit_backend:${RABBIT_BACKEND_VERSION:-latest}
+    restart: always
+    env_file:
+    - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      RABBIT_BACKEND_HOST: 0.0.0.0
+      RABBIT_BACKEND_DB_HOST: rabbit_backend-db
+      RABBIT_BACKEND_DB_PORT: 5432
+      RABBIT_BACKEND_DB_USER: rabbit_backend
+      RABBIT_BACKEND_DB_PASS: rabbit_backend
+      RABBIT_BACKEND_DB_BASE: rabbit_backend
+      RABBIT_BACKEND_REDIS_HOST: rabbit_backend-redis
+
+  db:
+    image: postgres:13.8-bullseye
+    hostname: rabbit_backend-db
+    environment:
+      POSTGRES_PASSWORD: "rabbit_backend"
+      POSTGRES_USER: "rabbit_backend"
+      POSTGRES_DB: "rabbit_backend"
+    volumes:
+    - rabbit_backend-db-data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: pg_isready -U rabbit_backend
+      interval: 2s
+      timeout: 3s
+      retries: 40
+
+  migrator:
+    image: rabbit_backend:${RABBIT_BACKEND_VERSION:-latest}
+    restart: "no"
+    command: alembic upgrade head
+    environment:
+      RABBIT_BACKEND_DB_HOST: rabbit_backend-db
+      RABBIT_BACKEND_DB_PORT: 5432
+      RABBIT_BACKEND_DB_USER: rabbit_backend
+      RABBIT_BACKEND_DB_PASS: rabbit_backend
+      RABBIT_BACKEND_DB_BASE: rabbit_backend
+    depends_on:
+      db:
+        condition: service_healthy
+
+  redis:
+    image: bitnami/redis:6.2.5
+    hostname: "rabbit_backend-redis"
+    restart: always
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
+    healthcheck:
+      test: redis-cli ping
+      interval: 1s
+      timeout: 3s
+      retries: 50
+
+
+
+volumes:
+  rabbit_backend-db-data:
+    name: rabbit_backend-db-data

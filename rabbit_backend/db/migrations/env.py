@@ -5,7 +5,7 @@ from alembic import context
 from sqlalchemy.ext.asyncio.engine import create_async_engine
 from sqlalchemy.future import Connection
 
-from rabbit_backend.db.base import Base
+from rabbit_backend.db.meta import meta
 from rabbit_backend.db.models import load_all_models
 from rabbit_backend.settings import settings
 
@@ -24,7 +24,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = Base.metadata
+target_metadata = meta
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

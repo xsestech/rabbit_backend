@@ -24,7 +24,7 @@ yarl = "^1.9.2"
 ujson = "^5.8.0"
 SQLAlchemy = {version = "^2.0.18", extras = ["asyncio"]}
 alembic = "^1.11.1"
-asyncpg = {version = "^0.29.0", extras = ["sa"]}
+asyncpg = {version = "^0.28.0", extras = ["sa"]}
 redis = {version = "^4.6.0", extras = ["hiredis"]}
 httptools = "^0.6.0"
 prometheus-client = "^0.17.0"
@@ -47,11 +47,6 @@ pytest-env = "^0.8.1"
 fakeredis = "^2.5.0"
 httpx = "^0.23.3"
 
-[tool.poetry.group.dev.dependencies]
-importlib-metadata = "<5"
-sphinx = "^7.2.6"
-sqlalchemy = {extras = ["mypy"], version = "^2.0.29"}
-
 [tool.isort]
 profile = "black"
 multi_line_output = 3
@@ -59,7 +54,6 @@ src_paths = ["rabbit_backend",]
 
 [tool.mypy]
 strict = true
-plugins = "sqlalchemy.ext.mypy.plugin"
 ignore_missing_imports = true
 allow_subclassing_any = true
 allow_untyped_calls = true

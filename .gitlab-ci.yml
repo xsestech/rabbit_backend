@@ -3,7 +3,7 @@ stages:
 
 .test-template:
   stage: test
-  image: python:3.11-slim
+  image: python:3.9.6-slim-buster
   tags:
   - docker-runner
   except:

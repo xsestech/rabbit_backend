@@ -1,10 +1,9 @@
 [flake8]
 max-complexity = 6
-max-raises = 4
 inline-quotes = double
 max-line-length = 88
 extend-ignore = E203
-docstring_style=numpy
+docstring_style=sphinx
 
 ignore =
   ; Found `f` string

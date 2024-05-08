@@ -18,10 +18,7 @@ def _setup_db(app: FastAPI) -> None:  # pragma: no cover
     session_factory for creating sessions
     and stores them in the application's state property.
 
-    Parameters
-    ----------
-    app: FastAPI
-        FastAPI application.
+    :param app: fastAPI application.
     """
     engine = create_async_engine(str(settings.db_url), echo=settings.db_echo)
     session_factory = async_sessionmaker(
@@ -36,10 +33,7 @@ def setup_prometheus(app: FastAPI) -> None:  # pragma: no cover
     """
     Enables prometheus integration.
 
-    Parameters
-    ----------
-    app: FastAPI
-        current application.
+    :param app: current application.
     """
     PrometheusFastApiInstrumentator(should_group_status_codes=False).instrument(
         app,
@@ -55,14 +49,8 @@ def register_startup_event(
     This function uses fastAPI app to store data
     in the state, such as db_engine.
 
-    Parameters
-    ----------
-    app: FastAPI
-        the fastAPI application.
-
-    Returns
-    -------
-        function that actually performs actions.
+    :param app: the fastAPI application.
+    :return: function that actually performs actions.
     """
 
     @app.on_event("startup")
@@ -83,14 +71,8 @@ def register_shutdown_event(
     """
     Actions to run on application's shutdown.
 
-    Parameters
-    ----------
-    app: FastAPI
-        fastAPI application.
-
-    Returns
-    -------
-        function that actually performs actions.
+    :param app: fastAPI application.
+    :return: function that actually performs actions.
     """
 
     @app.on_event("shutdown")
