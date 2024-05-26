@@ -6,6 +6,7 @@ from rabbit_backend.quiz.adapters.repository.protocols.question_repository impor
 )
 from rabbit_backend.quiz.interactors.dtos.question_dto import QuestionDTO
 from rabbit_backend.quiz.interactors.exceptions import PublicObjectAccessDeniedError
+from rabbit_backend.quiz.interactors.public_object_base import GetPublicObjectEntity
 from rabbit_backend.user.repository.protocols.user_repository import UserRepository
 
 
@@ -17,6 +18,21 @@ class QuestionDependencyMixin:
     ) -> None:
         self._question_repository = question_repository
         self._user_repository = user_repository
+
+
+class AddQuestionUseCase(QuestionDependencyMixin):
+    def __call__(
+        self,
+        data: dict[str, Any],
+        question_id: UUID,
+        user_id: UUID,
+    ) -> QuestionDTO:
+        get_question = GetPublicObjectEntity(
+            self._question_repository,
+            self._user_repository,
+        )
+        question = get_question(question_id, user_id)
+        return QuestionDTO.model_validate(question)
 
 
 class GetQuestionUseCase(QuestionDependencyMixin):

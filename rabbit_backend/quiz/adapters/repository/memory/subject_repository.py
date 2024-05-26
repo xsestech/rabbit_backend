@@ -1,28 +1,26 @@
-from typing import Optional, Protocol
-from uuid import UUID
+import uuid
 
-from rabbit_backend.quiz.adapters.repository.protocols.public_object_repository import (
-    PublicObjectRepository,
+from rabbit_backend.quiz.adapters.repository.memory.public_object_repository import (
+    PublicObjectMemoryRepository,
+)
+from rabbit_backend.quiz.adapters.repository.protocols.subject_repository import (
+    SubjectRepository,
 )
 from rabbit_backend.quiz.entities import SubjectEntity
+from rabbit_backend.user.entities import UserEntity
 
 
-class SubjectRepository(PublicObjectRepository[SubjectEntity], Protocol):
+class SubjectMemoryRepository(
+    PublicObjectMemoryRepository[SubjectEntity],
+    SubjectRepository,
+):
     def add(self, subject: SubjectEntity) -> SubjectEntity:
-        ...
+        subject.id = uuid.uuid4()
+        self._objects[subject.id] = subject
+        return subject
 
-    def list(
-        self,
-        user_id: UUID,
-        limit: int = 50,
-        is_unpublished_included: bool = True,
-    ) -> list[SubjectEntity]:
-        ...
-
-    def fill_topics(
-        self,
-        subject: SubjectEntity,
-        limit: Optional[int] = 50,
-        is_unpublished_included: bool = True,
-    ) -> SubjectEntity:
-        ...
+    def list(self, user: UserEntity, limit: int = 50) -> list[SubjectEntity]:
+        return self._filter(
+            lambda sub: sub.can_user_read(user),
+            limit=limit,
+        )
