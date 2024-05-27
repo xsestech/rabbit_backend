@@ -1,5 +1,6 @@
 # rabbit_backend
 
+[frontend](https://gilab.aigang.ru/ai-gang/rabbit_frontend)
 This project was generated using fastapi_template.
 
 ## Poetry
