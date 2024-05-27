@@ -7,19 +7,37 @@ import pytest
 from rabbit_backend.quiz.entities import (
     CardQuestionEntity,
     QuestionEntityFactory,
+    SubjectEntity,
     TestQuestionEntity,
     TopicEntity,
 )
 from rabbit_backend.user.entities import UserEntity
 
 
-def test_question_right() -> None:
+def test_question_correct() -> None:
     data = {
         "type": "test",
         "question": "test question",
         "answers": ["a", "b", "c"],
         "answer_idx": 0,
     }
+    topic = TopicEntity(
+        id=uuid4(),
+        created_at=datetime.now(),
+        edited_at=datetime.now(),
+        user=UserEntity(id=uuid4()),
+        is_published=False,
+        name="sdfsd",
+        question_type="test",
+        questions=[],
+        subject=SubjectEntity(
+            id=uuid4(),
+            user=UserEntity(id=uuid4()),
+            is_published=False,
+            name="sdfsd",
+            topics=[],
+        ),
+    )
     q = QuestionEntityFactory.get_question(
         id=uuid4(),
         created_at=datetime.now(),
@@ -27,6 +45,7 @@ def test_question_right() -> None:
         user=UserEntity(id=uuid4()),
         is_published=False,
         data=data,  # type: ignore
+        topic=topic,
     )
     print(q.data)
     assert isinstance(q, TestQuestionEntity)
@@ -57,6 +76,23 @@ def test_question_data_invalid_content() -> None:
         "question": "test question",
         "answers": "sdfsdfsdf",
     }
+    topic = TopicEntity(
+        id=uuid4(),
+        created_at=datetime.now(),
+        edited_at=datetime.now(),
+        user=UserEntity(id=uuid4()),
+        is_published=False,
+        name="sdfsd",
+        question_type="test",
+        questions=[],
+        subject=SubjectEntity(
+            id=uuid4(),
+            user=UserEntity(id=uuid4()),
+            is_published=False,
+            name="sdfsd",
+            topics=[],
+        ),
+    )
     with pytest.raises(ValueError):
         q = QuestionEntityFactory.get_question(
             id=uuid4(),
@@ -65,6 +101,7 @@ def test_question_data_invalid_content() -> None:
             user=UserEntity(id=uuid4()),
             is_published=False,
             data=data,  # type: ignore
+            topic=topic,
         )
 
 
@@ -74,6 +111,23 @@ def test_question_card() -> None:
         "question": "question",
         "answer": "answer",
     }
+    topic = TopicEntity(
+        id=uuid4(),
+        created_at=datetime.now(),
+        edited_at=datetime.now(),
+        user=UserEntity(id=uuid4()),
+        is_published=False,
+        name="sdfsd",
+        question_type="test",
+        questions=[],
+        subject=SubjectEntity(
+            id=uuid4(),
+            user=UserEntity(id=uuid4()),
+            is_published=False,
+            name="sdfsd",
+            topics=[],
+        ),
+    )
     q = QuestionEntityFactory.get_question(
         id=uuid4(),
         created_at=datetime.now(),
@@ -81,6 +135,7 @@ def test_question_card() -> None:
         user=UserEntity(id=uuid4()),
         is_published=False,
         data=data,  # type: ignore
+        topic=topic,
     )
 
     assert isinstance(q, CardQuestionEntity)
@@ -96,8 +151,15 @@ def test_topic_create() -> None:
             user=UserEntity(id=uuid4()),
             is_published=False,
             name="sdfsd",
-            questions_type="dsfsdf",
+            question_type="dsfsdf",
             questions=[],
+            subject=SubjectEntity(
+                id=uuid4(),
+                user=UserEntity(id=uuid4()),
+                is_published=False,
+                name="sdfsd",
+                topics=[],
+            ),
         )
 
     topic = TopicEntity(
@@ -107,6 +169,13 @@ def test_topic_create() -> None:
         user=UserEntity(id=uuid4()),
         is_published=False,
         name="sdfsd",
-        questions_type="test",
+        question_type="test",
         questions=[],
+        subject=SubjectEntity(
+            id=uuid4(),
+            user=UserEntity(id=uuid4()),
+            is_published=False,
+            name="sdfsd",
+            topics=[],
+        ),
     )

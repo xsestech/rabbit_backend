@@ -1,5 +1,4 @@
 from typing import Optional, Protocol
-from uuid import UUID
 
 from rabbit_backend.quiz.adapters.repository.protocols.public_object_repository import (
     PublicObjectRepository,
@@ -9,7 +8,7 @@ from rabbit_backend.user.entities import UserEntity
 
 
 class TopicRepository(PublicObjectRepository[TopicEntity], Protocol):
-    def add(self, subject_id: UUID, topic: TopicEntity) -> TopicEntity:
+    def add(self, topic: TopicEntity) -> TopicEntity:
         ...
 
     def fill_subject(

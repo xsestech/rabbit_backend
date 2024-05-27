@@ -1,6 +1,7 @@
-from typing import Callable, Generic, TypeVar
+from typing import Callable, Optional, TypeVar
 from uuid import UUID
 
+from rabbit_backend.quiz.adapters.repository.exceptions import ObjectDoesNotExistError
 from rabbit_backend.quiz.adapters.repository.protocols.public_object_repository import (
     PublicObjectRepository,
 )
@@ -15,6 +16,9 @@ class PublicObjectMemoryRepository(PublicObjectRepository[PublicObjectType]):
         self._objects: dict[UUID, PublicObjectType] = {}
 
     def get_by_id(self, object_id: UUID) -> PublicObjectType:
+        obj = self._objects.get(object_id)
+        if not obj:
+            raise ObjectDoesNotExistError(object_id)
         return self._objects[object_id]
 
     def delete(self, object_id: UUID) -> None:
@@ -37,8 +41,10 @@ class PublicObjectMemoryRepository(PublicObjectRepository[PublicObjectType]):
     def _filter(
         self,
         filter_func: Callable[[PublicObjectType], bool],
-        limit: int = 50,
+        limit: Optional[int] = 50,
     ) -> list[PublicObjectType]:
+        if limit is None:
+            limit = len(self._objects.values())
         return [obj for obj in self._objects.values() if filter_func(obj)][:limit]
 
 
@@ -46,25 +52,3 @@ ParentType = TypeVar(
     "ParentType",
     bound=PublicObjectEntity,
 )
-
-
-class ChildPublicObjectMemoryRepository(
-    PublicObjectMemoryRepository[PublicObjectType],
-    Generic[PublicObjectType, ParentType],
-):
-    def __init__(
-        self,
-        parent_repository: PublicObjectRepository[ParentType],
-        child_attr_in_parent: str,
-    ) -> None:
-        super().__init__()
-        self._parent_objects: dict[UUID, UUID] = {}
-        self._parent_repository = parent_repository
-        self._child_attr_in_parent = child_attr_in_parent
-
-    def delete(self, topic_id: UUID) -> None:
-        parent_id = self._parent_objects[topic_id]
-        parent = self._parent_repository.get_by_id(parent_id)
-        getattr(parent, self._child_attr_in_parent).remove(self._objects[topic_id])
-        self._parent_repository.update(parent)
-        super().delete(topic_id)
