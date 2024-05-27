@@ -46,12 +46,17 @@ class QuestionEntityAbstract(PublicObjectEntity, ABC):
 
     id: UUID4
     data: BaseModel
+    topic: TopicEntity
 
     @classmethod
     @abstractmethod
     def type(cls) -> str:
         """str: The type of question."""
         raise NotImplementedError
+
+    @property
+    def topic_id(self) -> UUID4:
+        return self.topic.id
 
 
 class QuestionEntityFactory:
@@ -134,10 +139,11 @@ class TopicEntity(PublicObjectEntity):
 
     id: UUID4
     name: str
+    subject: SubjectEntity
     questions: list[QuestionEntityAbstract]
-    questions_type: str
+    question_type: str
 
-    @field_validator("questions_type")
+    @field_validator("question_type")
     @classmethod
     def validate_questions_type(cls, value: str) -> str:
         question_subclasses = QuestionEntityAbstract.__subclasses__()
@@ -145,6 +151,11 @@ class TopicEntity(PublicObjectEntity):
             if subclass.type() == value:
                 return value
         raise ValueError("Invalid question type")
+
+    @property
+    def subject_id(self) -> UUID4:
+        """UUID4: The id of the subject."""
+        return self.subject.id  # noqa: DAR201
 
 
 class SubjectEntity(PublicObjectEntity):
@@ -156,4 +167,8 @@ class SubjectEntity(PublicObjectEntity):
 
     @override
     def can_user_edit(self, user: UserEntity) -> bool:
+        return user.is_admin
+
+    @override
+    def can_user_delete(self, user: UserEntity) -> bool:
         return user.is_admin

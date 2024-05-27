@@ -23,8 +23,24 @@ class GetPublicObjectEntity(Generic[PublicObjectEntityType]):
     def __call__(self, object_id: UUID, user_id: UUID) -> PublicObjectEntityType:
         public_object = self._repository.get_by_id(object_id)
         user = self._user_repository.get_by_id(user_id)
-        if public_object.can_user_read(user):
+        if not public_object.can_user_read(user):
             raise PublicObjectAccessDeniedError(public_object)
-        self._user = user
-
         return public_object
+
+
+class PublishObjectUseCase(Generic[PublicObjectEntityType]):
+    def __init__(
+        self,
+        repository: PublicObjectRepository[PublicObjectEntityType],
+        user_repository: UserRepository,
+    ) -> None:
+        self._repository = repository
+        self._user_repository = user_repository
+
+    def __call__(self, object_id: UUID, user_id: UUID, publish: bool = True) -> None:
+        public_object = self._repository.get_by_id(object_id)
+        user = self._user_repository.get_by_id(user_id)
+        if not user.is_admin:
+            raise PublicObjectAccessDeniedError(public_object)
+        public_object.is_published = True
+        self._repository.update(public_object)

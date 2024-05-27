@@ -1,9 +1,12 @@
-from pydantic import UUID4
+from pydantic import UUID4, field_validator
 
+from rabbit_backend.quiz.entities import QuestionEntityAbstract
 from rabbit_backend.quiz.interactors.dtos.dto_base import (
+    DTOBase,
     PublicCreateDTOBase,
     PublicDTOBase,
 )
+from rabbit_backend.quiz.interactors.dtos.question_dto import QuestionDTO
 
 
 class TopicCreateDTO(PublicCreateDTOBase):
@@ -15,8 +18,18 @@ class TopicCreateDTO(PublicCreateDTOBase):
 
 class TopicDTO(TopicCreateDTO, PublicDTOBase):
     id: UUID4
+    questions: list[QuestionDTO]
+
+    @field_validator("questions", mode="before")
+    @classmethod
+    def validate_topics(
+        cls,
+        questions: list[QuestionEntityAbstract],
+    ) -> list[QuestionDTO]:
+        return [QuestionDTO.model_validate(question) for question in questions]
 
 
-class TopicEditDTO(PublicDTOBase):
+class TopicEditDTO(DTOBase):
     id: UUID4
     name: str
+    subject_id: UUID4

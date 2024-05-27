@@ -15,3 +15,4 @@ class PublicCreateDTOBase(DTOBase):
 class PublicDTOBase(PublicCreateDTOBase):
     edited_at: datetime
     created_at: datetime
+    is_published: bool
