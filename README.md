@@ -1,6 +1,9 @@
 # rabbit_backend
 
-This project was generated using fastapi_template.
+## Ссылки
+- [frontend](https://gitlab.aigang.ru/ai-gang/rabbit_frontend)
+- [youtrack](https://youtrack.aigang.ru/agiles/158-2/current)
+- [wiki](https://docs.aigang.ru/shelves/ai-gang)
 
 ## Poetry
 
@@ -25,14 +28,14 @@ You can read more about poetry here: https://python-poetry.org/
 You can start the project with docker using this command:
 
 ```bash
-docker-compose -f deploy/docker-compose.yml --project-directory . up --build
+docker-compose -f docker-compose.yml --project-directory . up --build
 ```
 
 If you want to develop in docker with autoreload add `-f deploy/docker-compose.dev.yml` to your docker command.
 Like this:
 
 ```bash
-docker-compose -f deploy/docker-compose.yml -f deploy/docker-compose.dev.yml --project-directory . up --build
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml --project-directory . up --build
 ```
 
 This command exposes the web application on port 8000, mounts current directory and enables autoreload.
@@ -40,7 +43,7 @@ This command exposes the web application on port 8000, mounts current directory 
 But you have to rebuild image every time you modify `poetry.lock` or `pyproject.toml` with this command:
 
 ```bash
-docker-compose -f deploy/docker-compose.yml --project-directory . build
+docker-compose -f docker-compose.yml --project-directory . build
 ```
 
 ## Project structure
@@ -108,7 +111,7 @@ You can read more about pre-commit here: https://pre-commit.com/
 
 ## Remove DB
 ```bash
-docker-compose -f deploy/docker-compose.yml -f deploy/docker-compose.dev.yml --project-directory . rm -v
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml --project-directory . rm -v
 ```
 
 ## Migrations
@@ -150,8 +153,8 @@ alembic revision
 If you want to run it in docker, simply run:
 
 ```bash
-docker-compose -f deploy/docker-compose.yml -f deploy/docker-compose.dev.yml --project-directory . run --build --rm api pytest -vv .
-docker-compose -f deploy/docker-compose.yml -f deploy/docker-compose.dev.yml --project-directory . down
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml --project-directory . run --build --rm api pytest -vv .
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml --project-directory . down
 ```
 
 For running tests on your local machine.
